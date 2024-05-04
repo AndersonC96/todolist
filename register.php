@@ -2,22 +2,21 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <title>Criar conta</title>
+        <link rel="icon" type="image/png" href="./uploads/favicon.png"/>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
         <style>
-            /* Estilizando o botão de alternância */
-            .toggle-container {
+            .toggle-container{
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 10px;
-                margin-top: 1rem; /* Espaço acima */
+                margin-top: 1rem;
             }
-
-            .toggle-container .icon {
+            .toggle-container .icon{
                 font-size: 1.5rem;
             }
-
-            .toggle-button {
+            .toggle-button{
                 width: 50px;
                 height: 25px;
                 border-radius: 50px;
@@ -25,8 +24,7 @@
                 position: relative;
                 cursor: pointer;
             }
-
-            .toggle-ball {
+            .toggle-ball{
                 width: 22px;
                 height: 22px;
                 border-radius: 50%;
@@ -36,63 +34,50 @@
                 left: 1.5px;
                 transition: transform 0.3s;
             }
-
-            .dark .toggle-ball {
+            .dark .toggle-ball{
                 transform: translateX(25px);
             }
-
-            /* Estilos personalizados para toda a página */
-            .dark .dark\:bg-gray-800 {
+            .dark .dark\:bg-gray-800{
                 background-color: #2d3748;
             }
-
-            .dark .dark\:text-white {
+            .dark .dark\:text-white{
                 color: #ffffff;
             }
-
-            .dark .dark\:text-blue-300 {
+            .dark .dark\:text-blue-300{
                 color: #63b3ed;
             }
-
-            /* Estilo personalizado para o card */
-            .card {
+            .card{
                 background-color: white;
                 border-radius: 8px;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 padding: 16px;
                 text-align: center;
-                width: 100%; /* Adicionando uma largura padrão */
-                max-width: 400px; /* Tamanho máximo para tornar o card menor */
+                width: 100%;
+                max-width: 400px;
             }
-
-            .dark .card {
+            .dark .card{
                 background-color: #2d3748;
                 color: #e2e8f0;
             }
-
-            /* Garantindo que o texto nos inputs seja preto */
-            input {
-                color: black; /* define a cor do texto para preto */
-                background-color: white; /* mantém a cor de fundo branca */
-                border: 1px solid #d1d5db; /* cor padrão da borda */
+            input{
+                color: black;
+                background-color: white;
+                border: 1px solid #d1d5db;
             }
-
-            .dark input {
-                color: black; /* define a cor do texto para preto no modo escuro */
-                background-color: white; /* mantendo cor de fundo branca no modo escuro */
+            .dark input{
+                color: black;
+                background-color: white;
             }
-
         </style>
         <script>
-            function toggleTheme() {
+            function toggleTheme(){
                 const htmlElement = document.documentElement;
                 const theme = htmlElement.classList.toggle('dark') ? 'dark' : 'light';
                 localStorage.setItem('theme', theme);
             }
-
-            document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', () =>{
                 const savedTheme = localStorage.getItem('theme');
-                if (savedTheme === 'dark') {
+                if (savedTheme === 'dark'){
                     document.documentElement.classList.add('dark');
                 }
             });
