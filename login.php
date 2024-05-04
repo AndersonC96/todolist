@@ -67,6 +67,9 @@
     <body class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-500">
         <div class="w-full max-w-md p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
             <h1 class="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Login</h1>
+            <?php if (isset($_GET['error']) && $_GET['error'] == 'invalid_credentials'): ?>
+                <div class="text-red-500 mb-4">Usuário ou senha inválidos!</div>
+            <?php endif; ?>
             <form action="login_process.php" method="POST">
                 <input type="text" name="username" id="username" placeholder="Usuário" required class="w-full p-2 border rounded mb-4 bg-gray-50 dark:bg-gray-700">
                 <input type="password" name="password" id="password" placeholder="Senha" required class="w-full p-2 border rounded mb-4 bg-gray-50 dark:bg-gray-700">
