@@ -87,8 +87,8 @@
         <div class="flex flex-col items-center justify-center min-h-screen">
             <div class="container mx-auto p-4 card">
                 <h1 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Criar conta</h1>
-                <?php if (isset($_GET['error']) && $_GET['error'] == 'invalid_credentials'): ?>
-                <div class="text-red-500 mb-4">Nome de usuário indisponível</div>
+                <?php if (isset($_GET['error']) && $_GET['error'] == 'username_taken'): ?>
+                <div class="text-red-500 mb-4">Nome de usuário já está em uso!</div>
                 <?php endif; ?>
                 <form action="register_process.php" method="POST" class="flex flex-col gap-2">
                     <input type="text" name="username" placeholder="Usuário" class="border rounded px-2 py-1 block w-full" required>
