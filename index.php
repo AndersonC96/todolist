@@ -1,40 +1,101 @@
 <?php
-    include 'db.php';
     session_start();
+    include 'db.php';
     if(!isset($_SESSION['username'])){
         header("Location: login.php");
         exit();
     }
+    $username = $_SESSION['username'];
+    $stmt = $conn->prepare("SELECT profile_picture FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $profilePicture = $user['profile_picture'] ? 'uploads/' . $user['profile_picture'] : 'default.jpg';
+    $stmt->close();
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>To-Do List</title>
+        <link rel="icon" type="image/png" href="./uploads/favicon.png"/>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <style>
+            .sidebar{
+                width: 250px;
+                transition: transform 0.3s;
+            }
+            .sidebar-closed{
+                transform: translateX(-100%);
+            }
+            .content{
+                transition: margin-left 0.3s;
+            }
+            .content-margin-left{
+                margin-left: 250px;
+            }
+        </style>
+        <script>
+            function toggleSidebar(){
+                document.querySelector('.sidebar').classList.toggle('sidebar-closed');
+                document.querySelector('.content').classList.toggle('content-margin-left');
+            }
+            function toggleTheme(){
+                const htmlElement = document.documentElement;
+                const isDarkMode = htmlElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            }
+            document.addEventListener('DOMContentLoaded', () =>{
+                const savedTheme = localStorage.getItem('theme');
+                if(savedTheme === 'dark'){
+                    document.documentElement.classList.add('dark');
+                }
+            });
+            function requestNotificationPermission(){
+                if(Notification.permission === 'granted'){
+                    showNotification();
+                }else if(Notification.permission !== 'denied'){
+                    Notification.requestPermission().then(permission =>{
+                        if(permission === 'granted'){
+                            showNotification();
+                        }
+                    });
+                }
+            }
+            function showNotification(){
+                new Notification('Nova notificação!',{
+                    body: 'O tempo para finalizar uma tarefa está acabando.',
+                    icon: 'uploads/notification.png'
+                });
+            }
+        </script>
     </head>
-    <body class="bg-gray-100">
-        <div class="container mx-auto p-4">
-            <div>
-                <a href="account.php" class="bg-green-500 text-white px-4 py-2 rounded">Minha Conta</a>
-                <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded">Sair</a>
+    <body class="bg-gray-100 dark:bg-gray-800 flex">
+        <div class="sidebar bg-gray-800 text-white p-4 sidebar-closed">
+            <div class="flex items-center mb-4">
+                <img src="<?php echo $profilePicture; ?>" alt="Profile Picture" class="w-12 h-12 rounded-full">
+                <span class="ml-4"><?php echo $username; ?></span>
             </div>
-            <h1 class="text-xl font-bold mb-4">To-Do List</h1>
-            <form action="add.php" method="POST">
-                <input type="text" name="title" class="border rounded px-2 py-1" required>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Task</button>
+            <button onclick="requestNotificationPermission()" class="mb-4 w-full bg-blue-500 p-2 rounded">Ativar Notificações</button>
+            <button onclick="toggleSidebar()" class="absolute top-4 right-4 text-gray-100 text-2xl">&times;</button>
+            <button type="submit" class="mb-4 w-full bg-green-500 p-2 rounded">Adicionar Tarefa</button>
+            <input type="text" placeholder="Buscar..." class="w-full p-2 mb-4 bg-gray-700 rounded">
+            <ul class="space-y-2 mb-4">
+                <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Hoje</a></li>
+                <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Em Breve</a></li>
+            </ul>
+            <button onclick="toggleTheme()" class="w-full bg-yellow-500 p-2 rounded mb-4">Alterar Tema</button>
+            <form action="logout.php" method="POST">
+                <button type="submit" class="w-full bg-red-500 p-2 rounded">Sair</button>
             </form>
-            <ul class="mt-4">
-                <?php
-                    $result = $conn->query("SELECT * FROM tasks");
-                    while($row = $result->fetch_assoc()){
-                        echo '<li class="flex justify-between items-center bg-white p-2 mb-2 rounded shadow">';
-                        echo '<span>' . $row['title'] . '</span>';
-                        echo '<form action="delete.php" method="POST" class="ml-4">';
-                        echo '<input type="hidden" name="id" value="' . $row['id'] . '">';
-                        echo '<button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>';
-                        echo '</form>';
-                        echo '</li>';
-                    }
-                ?>
+        </div>
+        <div class="content flex-grow p-4 content-margin-left">
+            <button onclick="toggleSidebar()" class="mb-4 text-gray-800 text-2xl">&#9776;</button>
+            <h1 class="text-xl font-bold mb-4">Hoje</h1>
+            <ul>
+                <li class="mb-2 p-2 bg-white rounded shadow">Tarefa 1</li>
             </ul>
         </div>
     </body>
