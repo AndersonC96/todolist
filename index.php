@@ -14,6 +14,7 @@
     <body class="bg-gray-100">
         <div class="container mx-auto p-4">
             <div>
+                <a href="account.php" class="bg-green-500 text-white px-4 py-2 rounded">Minha Conta</a>
                 <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded">Sair</a>
             </div>
             <h1 class="text-xl font-bold mb-4">To-Do List</h1>
