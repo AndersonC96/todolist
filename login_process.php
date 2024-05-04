@@ -13,5 +13,6 @@
         header("Location: index.php");
     }else{
         header("Location: login.php?error=invalid_credentials");
+        exit();
     }
 ?>
