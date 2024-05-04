@@ -13,6 +13,9 @@
     </head>
     <body class="bg-gray-100">
         <div class="container mx-auto p-4">
+            <div>
+                <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded">Sair</a>
+            </div>
             <h1 class="text-xl font-bold mb-4">To-Do List</h1>
             <form action="add.php" method="POST">
                 <input type="text" name="title" class="border rounded px-2 py-1" required>
