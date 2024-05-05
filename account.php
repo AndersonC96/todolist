@@ -149,7 +149,7 @@
                 <img src="<?php echo $profilePicture; ?>" alt="Profile Picture" class="w-12 h-12 rounded-full">
                 <span class="ml-4"><?php echo $username; ?></span>
             </div>
-            <button onclick="window.location.href='account.php'" class="custom-button bg-indigo-500 mb-4">Minha Conta</button>
+            <button onclick="window.location.href='index.php'" class="custom-button bg-green-500 mb-4">Home</button>
             <button onclick="toggleSidebar()" class="absolute top-4 right-4 text-gray-100 text-2xl">&times;</button>
             <form action="logout.php" method="POST">
                 <button type="submit" class="custom-button bg-red-500">Sair</button>
