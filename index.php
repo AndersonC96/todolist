@@ -143,6 +143,13 @@ $tasks = $stmt->get_result();
             background-color: #ff0000;
             color: #ffffff;
         }
+        .task-footer {
+            margin-top: 0.5rem;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
     <script>
         function toggleSidebar(){
@@ -198,14 +205,10 @@ $tasks = $stmt->get_result();
             <?php while ($task = $tasks->fetch_assoc()): ?>
                 <li class="task-item mb-4">
                     <h3 class="text-lg font-bold"><?php echo htmlspecialchars($task['title']); ?></h3>
+                    <hr>
                     <p><?php echo htmlspecialchars($task['description']); ?></p>
-                    <p><strong>Criada em:</strong> <?php echo date('d/m/Y', strtotime($task['created_at'])); ?></p>
-                    <p><strong>Data de Término:</strong> <?php echo $task['due_date'] ? date('d/m/Y', strtotime($task['due_date'])) : 'Não definida'; ?></p>
-                    <span class="inline-block rounded px-2 py-1 text-xs font-bold <?php 
-                    echo $task['priority'] == 'Baixa' ? 'badge-baixa' : 
-                        ($task['priority'] == 'Média' ? 'badge-media' :
-                        ($task['priority'] == 'Alta' ? 'badge-alta' : 'badge-urgente'));
-                    ?>"><?php echo $task['priority']; ?></span>
+                    
+                    
                     <!-- Subtarefas -->
                     <h4 class="text-md font-bold mt-2">Subtarefas:</h4>
                     <ul>
@@ -226,6 +229,15 @@ $tasks = $stmt->get_result();
                         <input type="text" name="subtask_title" placeholder="Nova Subtarefa" class="w-full p-2 border rounded mb-2" style="color:black;">
                         <button type="submit" class="bg-blue-500 text-white p-2 rounded">Adicionar Subtarefa</button>
                     </form>
+                    <div class="task-footer">
+                        <span><strong>Criada em:</strong> <?php echo date('d/m/Y', strtotime($task['created_at'])); ?></span>
+                        <span><strong>Data de Término:</strong> <?php echo $task['due_date'] ? date('d/m/Y', strtotime($task['due_date'])) : 'Não definida'; ?></span>
+                        <span class="inline-block rounded px-2 py-1 text-xs font-bold <?php 
+                    echo $task['priority'] == 'Baixa' ? 'badge-baixa' : 
+                        ($task['priority'] == 'Média' ? 'badge-media' :
+                        ($task['priority'] == 'Alta' ? 'badge-alta' : 'badge-urgente'));
+                    ?>"><?php echo $task['priority']; ?></span>
+                    </div>
                 </li>
             <?php endwhile; ?>
         </ul>
