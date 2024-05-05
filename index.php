@@ -13,8 +13,25 @@
     $user = $result->fetch_assoc();
     $profilePicture = $user['profile_picture'] ? 'uploads/' . $user['profile_picture'] : 'default.jpg';
     $stmt->close();
+    $orderBy = "created_at DESC";
+    if(isset($_GET['sort'])){
+        switch($_GET['sort']){
+            case "oldest":
+                $orderBy = "created_at ASC";
+                break;
+            case "less_urgent":
+                $orderBy = "priority ASC";
+                break;
+            case "most_urgent":
+                $orderBy = "priority DESC";
+                break;
+            case "due_soon":
+                $orderBy = "due_date ASC";
+                break;
+        }
+    }
     $searchQuery = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%';
-    $stmt = $conn->prepare("SELECT * FROM tasks WHERE username = ? AND completed = 0 AND (title LIKE ? OR description LIKE ?)");
+    $stmt = $conn->prepare("SELECT * FROM tasks WHERE username = ? AND completed = 0 AND (title LIKE ? OR description LIKE ?) ORDER BY $orderBy");
     $stmt->bind_param("sss", $username, $searchQuery, $searchQuery);
     $stmt->execute();
     $tasks = $stmt->get_result();
@@ -28,130 +45,45 @@
         <link rel="icon" type="image/png" href="./uploads/favicon.png"/>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <style>
-            .dark .dark\:bg-gray-900{
-                background-color: #1a202c;
-            }
-            .dark .dark\:bg-gray-800{
-                background-color: #2d3748;
-            }
-            .dark .dark\:text-white{
-                color: #ffffff;
-            }
-            .dark .dark\:text-blue-300{
-                color: #63b3ed;
-            }
-            .sidebar{
-                width: 250px;
-                height: 100vh;
-                transition: transform 0.3s;
-                position: fixed;
-                left: 0;
-                top: 0;
-                bottom: 0;
-            }
-            .sidebar-closed{
-                transform: translateX(-250px);
-            }
-            .content{
-                transition: margin-left 0.3s;
-                margin-left: 250px;
-            }
-            .content-margin-left{
-                margin-left: 0px;
-            }
-            .custom-button{
-                width: 100%;
-                padding: 0.5rem;
-                margin-bottom: 0.5rem;
-                border-radius: 0.375rem;
-                color: white;
-            }
-            .task-item{
-                padding: 0.5rem;
-                border-radius: 0.375rem;
-                background-color: white;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                transition: background-color 0.3s;
-            }
-            .task-item:hover{
-                background-color: #f0f4f8;
-            }
-            .dark .task-item{
-                background-color: #374151;
-                color: white;
-            }
-            .dark .task-item:hover{
-                background-color: #4b5563;
-            }
-            .toggle-container{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-            }
-            .badge-baixa{
-                background-color: #d1fae5;
-                color: #065f46;
-            }
-            .badge-media{
-                background-color: #bf9701;
-                color: #ffffff;
-            }
-            .badge-alta{
-                background-color: #ff2a00;
-                color: #ffffff;
-            }
-            .badge-urgente{
-                background-color: #ff0000;
-                color: #ffffff;
-            }
-            .task-footer{
-                margin-top: 0.5rem;
-                border-top: 1px solid #e5e7eb;
-                padding-top: 0.5rem;
-                display: flex;
-                justify-content: space-between;
-            }
-            .toggle-button{
-                width: 50px;
-                height: 25px;
-                border-radius: 50px;
-                background-color: #a0f4ff;
-                position: relative;
-                cursor: pointer;
-            }
-            .toggle-ball{
-                width: 22px;
-                height: 22px;
-                border-radius: 50%;
-                background-color: white;
-                position: absolute;
-                top: 1.5px;
-                left: 1.5px;
-                transition: transform 0.3s;
-            }
-            .dark .toggle-ball{
-                transform: translateX(25px);
-            }
-            .line-through {
-                text-decoration: line-through;
-            }
+            .dark .dark\:bg-gray-900{background-color: #1a202c;}
+            .dark .dark\:bg-gray-800{background-color: #2d3748;}
+            .dark .dark\:text-white{color: #ffffff;}
+            .dark .dark\:text-blue-300{color: #63b3ed;}
+            .sidebar{width: 250px; height: 100vh; transition: transform 0.3s; position: fixed; left: 0; top: 0; bottom: 0;}
+            .sidebar-closed{transform: translateX(-250px);}
+            .content{transition: margin-left 0.3s; margin-left: 250px;}
+            .content-margin-left{margin-left: 0px;}
+            .custom-button{width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border-radius: 0.375rem; color: white;}
+            .task-item{padding: 0.5rem; border-radius: 0.375rem; background-color: white; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: background-color 0.3s;}
+            .task-item:hover{background-color: #f0f4f8;}
+            .dark .task-item{background-color: #374151; color: white;}
+            .dark .task-item:hover{background-color: #4b5563;}
+            .toggle-container{display: flex; align-items: center; justify-content: center; gap: 10px;}
+            .badge-baixa{background-color: #d1fae5; color: #065f46;}
+            .badge-media{background-color: #bf9701; color: #ffffff;}
+            .badge-alta{background-color: #ff2a00; color: #ffffff;}
+            .badge-urgente{background-color: #ff0000; color: #ffffff;}
+            .task-footer{margin-top: 0.5rem; border-top: 1px solid #e5e7eb; padding-top: 0.5rem; display: flex; justify-content: space-between;}
+            .toggle-button{width: 50px; height: 25px; border-radius: 50px; background-color: #a0f4ff; position: relative; cursor: pointer;}
+            .toggle-ball{width: 22px; height: 22px; border-radius: 50%; background-color: white; position: absolute; top: 1.5px; left: 1.5px; transition: transform 0.3s;}
+            .dark .toggle-ball{transform: translateX(25px);}
+            .line-through{text-decoration: line-through;}
         </style>
         <script>
-            function toggleSidebar(){
+            function toggleSidebar() {
                 const sidebar = document.querySelector('.sidebar');
                 const content = document.querySelector('.content');
                 const isClosed = sidebar.classList.toggle('sidebar-closed');
                 content.classList.toggle('content-margin-left', isClosed);
             }
-            function toggleTheme(){
+            function toggleTheme() {
                 const htmlElement = document.documentElement;
                 const theme = htmlElement.classList.toggle('dark') ? 'dark' : 'light';
                 localStorage.setItem('theme', theme);
             }
-            document.addEventListener('DOMContentLoaded', () =>{
+            document.addEventListener('DOMContentLoaded', () => {
                 const savedTheme = localStorage.getItem('theme');
-                if(savedTheme === 'dark'){
+                if (savedTheme === 'dark') {
                     document.documentElement.classList.add('dark');
                 }
             });
@@ -168,6 +100,13 @@
             <button onclick="window.location.href='add_task.php'" class="custom-button bg-green-500">Adicionar Tarefa</button>
             <form action="" method="GET">
                 <input type="text" name="search" placeholder="Buscar..." class="w-full p-2 mb-4 bg-gray-700 rounded" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                <select name="sort" class="w-full p-2 mb-4 bg-gray-700 rounded">
+                    <option value="newest" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'newest') ? 'selected' : ''; ?>>Mais recente</option>
+                    <option value="oldest" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'oldest') ? 'selected' : ''; ?>>Mais antigo</option>
+                    <option value="less_urgent" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'less_urgent') ? 'selected' : ''; ?>>Menos urgente</option>
+                    <option value="most_urgent" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'most_urgent') ? 'selected' : ''; ?>>Mais urgente</option>
+                    <option value="due_soon" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'due_soon') ? 'selected' : ''; ?>>Data de término perto</option>
+                </select>
                 <button type="submit" class="custom-button bg-blue-500">Pesquisar</button>
             </form>
             <ul class="space-y-2 mb-4">
