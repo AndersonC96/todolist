@@ -1,7 +1,7 @@
 <?php
     session_start();
     include 'db.php';
-    if (!isset($_SESSION['username'])){
+    if(!isset($_SESSION['username'])){
         header("Location: login.php");
         exit();
     }
@@ -132,6 +132,9 @@
             .dark .toggle-ball{
                 transform: translateX(25px);
             }
+            .line-through {
+                text-decoration: line-through;
+            }
         </style>
         <script>
             function toggleSidebar(){
@@ -187,17 +190,15 @@
             <ul>
                 <?php while ($task = $tasks->fetch_assoc()): ?>
                 <li class="task-item mb-4">
-                    <h3 class="text-lg font-bold"><?php echo htmlspecialchars($task['title']); ?></h3>
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold"><?php echo htmlspecialchars($task['title']); ?></h3>
+                        <form action="finish_task.php" method="POST">
+                            <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
+                            <button type="submit" class="bg-green-500 text-white p-1 rounded ml-2">Finalizar</button>
+                        </form>
+                    </div>
                     <hr>
                     <p><?php echo htmlspecialchars($task['description']); ?></p>
-                    <form action="finish_task.php" method="POST">
-                        <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
-                        <button type="submit" class="bg-green-500 text-white p-2 rounded mb-2">Finalizar Tarefa</button>
-                    </form>
-                    <form action="undo_task.php" method="POST">
-                        <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
-                        <button type="submit" class="bg-yellow-500 text-white p-2 rounded mb-2">Refazer</button>
-                    </form>
                     <h4 class="text-md font-bold mt-2">Subtarefas</h4>
                     <ul>
                         <?php
@@ -206,12 +207,15 @@
                             $subtaskStmt->execute();
                             $subtasks = $subtaskStmt->get_result();
                             while($subtask = $subtasks->fetch_assoc()):
+                                $completedClass = $subtask['completed'] ? 'line-through' : '';
                         ?>
-                        <li class="task-item mb-2">
+                        <li class="task-item mb-2 <?php echo $completedClass; ?>">
                             <?php echo htmlspecialchars($subtask['title']); ?>
-                            <form action="finish_subtask.php" method="POST" class="inline">
+                            <form action="<?php echo $subtask['completed'] ? 'undo_subtask.php' : 'finish_subtask.php'; ?>" method="POST" class="inline">
                                 <input type="hidden" name="subtask_id" value="<?php echo $subtask['id']; ?>">
-                                <button type="submit" class="bg-blue-500 text-white p-1 rounded ml-2">Finalizar</button>
+                                <button type="submit" class="<?php echo $subtask['completed'] ? 'bg-yellow-500' : 'bg-blue-500'; ?> text-white p-1 rounded ml-2">
+                                    <?php echo $subtask['completed'] ? 'Refazer' : 'Finalizar'; ?>
+                                </button>
                             </form>
                         </li>
                         <?php endwhile; ?>
