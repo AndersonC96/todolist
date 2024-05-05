@@ -13,14 +13,11 @@
     $user = $result->fetch_assoc();
     $profilePicture = $user['profile_picture'] ? 'uploads/' . $user['profile_picture'] : 'default.jpg';
     $stmt->close();
-    $stmt = $conn->prepare("SELECT * FROM tasks WHERE username = ? AND completed = 0");
-    $stmt->bind_param("s", $username);
+    $searchQuery = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%';
+    $stmt = $conn->prepare("SELECT * FROM tasks WHERE username = ? AND completed = 0 AND (title LIKE ? OR description LIKE ?)");
+    $stmt->bind_param("sss", $username, $searchQuery, $searchQuery);
     $stmt->execute();
     $tasks = $stmt->get_result();
-    $searchQuery = "";
-    if(isset($_GET['search'])){
-        $searchQuery = $_GET['search'];
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -170,12 +167,11 @@
             <button onclick="toggleSidebar()" class="absolute top-4 right-4 text-gray-100 text-2xl">&times;</button>
             <button onclick="window.location.href='add_task.php'" class="custom-button bg-green-500">Adicionar Tarefa</button>
             <form action="" method="GET">
-                <input type="text" name="search" placeholder="Buscar..." class="w-full p-2 mb-4 bg-gray-700 rounded" value="<?php echo htmlspecialchars($searchQuery); ?>">
+                <input type="text" name="search" placeholder="Buscar..." class="w-full p-2 mb-4 bg-gray-700 rounded" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
                 <button type="submit" class="custom-button bg-blue-500">Pesquisar</button>
             </form>
             <ul class="space-y-2 mb-4">
                 <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Hoje</a></li>
-                <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Em Breve</a></li>
                 <a href="completed_tasks.php" class="block p-2 hover:bg-gray-700 rounded">Tarefas Concluídas</a>
             </ul>
             <form action="logout.php" method="POST">
@@ -193,7 +189,7 @@
         </div>
         <div class="content flex-grow p-4 dark:text-white">
             <button onclick="toggleSidebar()" class="mb-4 text-gray-800 dark:text-white text-2xl">&#9776;</button>
-            <h1 class="text-xl font-bold mb-4">Tarefas de Hoje</h1>
+            <h1 class="text-xl font-bold mb-4">Tarefas atuais</h1>
             <ul>
                 <?php while ($task = $tasks->fetch_assoc()): ?>
                 <li class="task-item mb-4">
