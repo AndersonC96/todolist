@@ -1,7 +1,7 @@
 <?php
     session_start();
     include 'db.php';
-    if(!isset($_SESSION['username'])){
+    if (!isset($_SESSION['username'])){
         header("Location: login.php");
         exit();
     }
@@ -13,7 +13,7 @@
     $user = $result->fetch_assoc();
     $profilePicture = $user['profile_picture'] ? 'uploads/' . $user['profile_picture'] : 'default.jpg';
     $stmt->close();
-    $stmt = $conn->prepare("SELECT * FROM tasks WHERE username = ?");
+    $stmt = $conn->prepare("SELECT * FROM tasks WHERE username = ? AND completed = 0");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $tasks = $stmt->get_result();
