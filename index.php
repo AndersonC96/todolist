@@ -17,6 +17,10 @@
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $tasks = $stmt->get_result();
+    $searchQuery = "";
+    if(isset($_GET['search'])){
+        $searchQuery = $_GET['search'];
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -165,7 +169,10 @@
             <button onclick="window.location.href='account.php'" class="custom-button bg-indigo-500 mb-4">Minha Conta</button>
             <button onclick="toggleSidebar()" class="absolute top-4 right-4 text-gray-100 text-2xl">&times;</button>
             <button onclick="window.location.href='add_task.php'" class="custom-button bg-green-500">Adicionar Tarefa</button>
-            <input type="text" placeholder="Buscar..." class="w-full p-2 mb-4 bg-gray-700 rounded">
+            <form action="" method="GET">
+                <input type="text" name="search" placeholder="Buscar..." class="w-full p-2 mb-4 bg-gray-700 rounded" value="<?php echo htmlspecialchars($searchQuery); ?>">
+                <button type="submit" class="custom-button bg-blue-500">Pesquisar</button>
+            </form>
             <ul class="space-y-2 mb-4">
                 <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Hoje</a></li>
                 <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Em Breve</a></li>
