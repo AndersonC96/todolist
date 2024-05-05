@@ -6,6 +6,13 @@
         exit();
     }
     $username = $_SESSION['username'];
+    $stmt = $conn->prepare("SELECT profile_picture FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $profilePicture = $user['profile_picture'] ? 'uploads/' . $user['profile_picture'] : 'default.jpg';
+    $stmt->close();
     $stmt = $conn->prepare("SELECT * FROM tasks WHERE username = ? AND completed = 1");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -19,7 +26,6 @@
         <title>Tarefas Concluídas</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <link rel="icon" type="image/png" href="./uploads/favicon.png"/>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <style>
             .dark .dark\:bg-gray-900{
                 background-color: #1a202c;
@@ -29,9 +35,6 @@
             }
             .dark .dark\:text-white{
                 color: #ffffff;
-            }
-            .dark .dark\:text-blue-300{
-                color: #63b3ed;
             }
             .sidebar{
                 width: 250px;
@@ -59,51 +62,68 @@
                 border-radius: 0.375rem;
                 color: white;
             }
-            .task-item{
-                padding: 0.5rem;
-                border-radius: 0.375rem;
-                background-color: white;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                transition: background-color 0.3s;
+            .form-input{
+                border: 1px solid #ccc;
+                padding: 8px;
+                margin-bottom: 8px;
+                width: 100%;
+                border-radius: 4px;
             }
-            .task-item:hover{
-                background-color: #f0f4f8;
-            }
-            .dark .task-item{
-                background-color: #374151;
+            .dark .form-input{
+                background-color: #2d3748;
                 color: white;
+                border-color: #4b5563;
             }
-            .dark .task-item:hover{
-                background-color: #4b5563;
+            .form-label{
+                display: block;
+                margin-bottom: 4px;
+            }
+            .form-button{
+                background-color: #4299e1;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+            }
+            .form-button:hover{
+                background-color: #2b6cb0;
+            }
+            .profile-picture{
+                width: 100px;
+                border-radius: 50%;
+                margin-bottom: 8px;
+            }
+            .dark .form-button{
+                background-color: #2b6cb0;
             }
             .toggle-container{
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 10px;
+                margin-top: 10px;
             }
-            .badge-baixa{
-                background-color: #d1fae5;
-                color: #065f46;
+            .toggle-button{
+                width: 50px;
+                height: 25px;
+                border-radius: 50px;
+                background-color: #a0f4ff;
+                position: relative;
+                cursor: pointer;
             }
-            .badge-media{
-                background-color: #bf9701;
-                color: #ffffff;
+            .toggle-ball{
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                background-color: white;
+                position: absolute;
+                top: 1.5px;
+                left: 1.5px;
+                transition: transform 0.3s;
             }
-            .badge-alta{
-                background-color: #ff2a00;
-                color: #ffffff;
-            }
-            .badge-urgente{
-                background-color: #ff0000;
-                color: #ffffff;
-            }
-            .task-footer{
-                margin-top: 0.5rem;
-                border-top: 1px solid #e5e7eb;
-                padding-top: 0.5rem;
-                display: flex;
-                justify-content: space-between;
+            .dark .toggle-ball{
+                transform: translateX(25px);
             }
         </style>
         <script>
@@ -127,7 +147,29 @@
         </script>
     </head>
     <body class="bg-gray-100 dark:bg-gray-900 flex dark:text-white">
+        <div class="sidebar bg-gray-800 dark:bg-gray-900 text-white p-4 sidebar-closed">
+            <div class="flex items-center mb-4">
+                <img src="<?php echo $profilePicture; ?>" alt="Profile Picture" class="w-12 h-12 rounded-full">
+                <span class="ml-4"><?php echo $username; ?></span>
+            </div>
+            <button onclick="window.location.href='index.php'" class="custom-button bg-green-500 mb-4">Home</button>
+            <button onclick="window.location.href='account.php'" class="custom-button bg-indigo-500 mb-4">Minha Conta</button>
+            <button onclick="toggleSidebar()" class="absolute top-4 right-4 text-gray-100 text-2xl">&times;</button>
+            <form action="logout.php" method="POST">
+                <button type="submit" class="custom-button bg-red-500">Sair</button>
+            </form>
+            <div class="mt-4 text-center">
+                <div class="toggle-container">
+                    <span class="icon">🌞</span>
+                    <div class="toggle-button" onclick="toggleTheme()">
+                        <div class="toggle-ball"></div>
+                    </div>
+                    <span class="icon">🌜</span>
+                </div>
+            </div>
+        </div>
         <div class="content flex-grow p-4 dark:text-white">
+            <button onclick="toggleSidebar()" class="mb-4 text-gray-800 dark:text-white text-2xl">&#9776;</button>
             <h1 class="text-xl font-bold mb-4">Tarefas Concluídas</h1>
             <ul>
                 <?php while ($task = $tasks->fetch_assoc()): ?>
