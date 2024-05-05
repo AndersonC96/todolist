@@ -111,6 +111,27 @@
                 display: flex;
                 justify-content: space-between;
             }
+            .toggle-button{
+                width: 50px;
+                height: 25px;
+                border-radius: 50px;
+                background-color: #a0f4ff;
+                position: relative;
+                cursor: pointer;
+            }
+            .toggle-ball{
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                background-color: white;
+                position: absolute;
+                top: 1.5px;
+                left: 1.5px;
+                transition: transform 0.3s;
+            }
+            .dark .toggle-ball{
+                transform: translateX(25px);
+            }
         </style>
         <script>
             function toggleSidebar(){
@@ -132,7 +153,7 @@
             });
         </script>
     </head>
-    <body class="bg-gray-100 dark:bg-gray-900 flex dark:text-white">
+    <body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
         <div class="sidebar bg-gray-800 dark:bg-gray-900 text-white p-4 sidebar-closed">
             <div class="flex items-center mb-4">
                 <img src="<?php echo $profilePicture; ?>" alt="Profile Picture" class="w-12 h-12 rounded-full">
@@ -145,6 +166,7 @@
             <ul class="space-y-2 mb-4">
                 <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Hoje</a></li>
                 <li><a href="#" class="block p-2 hover:bg-gray-700 rounded">Em Breve</a></li>
+                <a href="completed_tasks.php" class="block p-2 hover:bg-gray-700 rounded">Tarefas Concluídas</a>
             </ul>
             <form action="logout.php" method="POST">
                 <button type="submit" class="custom-button bg-red-500">Sair</button>
@@ -171,6 +193,10 @@
                     <form action="finish_task.php" method="POST">
                         <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
                         <button type="submit" class="bg-green-500 text-white p-2 rounded mb-2">Finalizar Tarefa</button>
+                    </form>
+                    <form action="undo_task.php" method="POST">
+                        <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
+                        <button type="submit" class="bg-yellow-500 text-white p-2 rounded mb-2">Refazer</button>
                     </form>
                     <h4 class="text-md font-bold mt-2">Subtarefas</h4>
                     <ul>
