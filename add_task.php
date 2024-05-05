@@ -79,6 +79,10 @@
             border-color: #4b5563;
         }
 
+        input[type="date"] {
+            color: black; /* Define a cor preta para a entrada de data */
+        }
+
         .form-label {
             display: block;
             margin-bottom: 4px;
@@ -186,6 +190,8 @@
                 <input type="text" name="title" class="form-input w-full p-2 border rounded mb-4" required>
                 <label class="block mb-2 dark:text-white">Descrição</label>
                 <textarea name="description" class="form-input w-full p-2 border rounded mb-4"></textarea>
+                <label class="block mb-2 dark:text-white">Data de Término</label>
+                <input type="date" name="due_date" class="form-input w-full p-2 border rounded mb-4">
                 <button type="submit" class="bg-green-500 text-white p-2 rounded">Adicionar Tarefa</button>
             </form>
         </div>
