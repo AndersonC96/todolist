@@ -2,7 +2,7 @@
 // Sessão e conexão com o banco de dados
 session_start();
 include 'db.php';
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['username'])){
     header("Location: login.php");
     exit();
 }
@@ -31,20 +31,20 @@ $tasks = $stmt->get_result();
     <link rel="icon" type="image/png" href="./uploads/favicon.png"/>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .dark .dark\:bg-gray-900 {
+        .dark .dark\:bg-gray-900{
             background-color: #1a202c;
         }
-        .dark .dark\:bg-gray-800 {
+        .dark .dark\:bg-gray-800{
             background-color: #2d3748;
         }
-        .dark .dark\:text-white {
+        .dark .dark\:text-white{
             color: #ffffff;
         }
-        .dark .dark\:text-blue-300 {
+        .dark .dark\:text-blue-300{
             color: #63b3ed;
         }
 
-        .sidebar {
+        .sidebar{
             width: 250px;
             height: 100vh;
             transition: transform 0.3s;
@@ -53,18 +53,18 @@ $tasks = $stmt->get_result();
             top: 0;
             bottom: 0;
         }
-        .sidebar-closed {
+        .sidebar-closed{
             transform: translateX(-250px);
         }
-        .content {
+        .content{
             transition: margin-left 0.3s;
             margin-left: 250px;
         }
-        .content-margin-left {
+        .content-margin-left{
             margin-left: 0px;
         }
 
-        .custom-button {
+        .custom-button{
             width: 100%;
             padding: 0.5rem;
             margin-bottom: 0.5rem;
@@ -72,11 +72,11 @@ $tasks = $stmt->get_result();
             color: white;
         }
 
-        .theme-button {
+        .theme-button{
             background-color: #f59e0b;
         }
 
-        .task-item {
+        .task-item{
             padding: 0.5rem;
             border-radius: 0.375rem;
             background-color: white;
@@ -84,29 +84,29 @@ $tasks = $stmt->get_result();
             transition: background-color 0.3s;
         }
 
-        .task-item:hover {
+        .task-item:hover{
             background-color: #f0f4f8;
         }
 
-        .dark .task-item {
+        .dark .task-item{
             background-color: #374151;
             color: white;
         }
 
-        .dark .task-item:hover {
+        .dark .task-item:hover{
             background-color: #4b5563;
         }
 
-        .toggle-container {
+        .toggle-container{
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
-        .toggle-container .icon {
+        .toggle-container .icon{
             font-size: 1.5rem;
         }
-        .toggle-button {
+        .toggle-button{
             width: 50px;
             height: 25px;
             border-radius: 50px;
@@ -114,7 +114,7 @@ $tasks = $stmt->get_result();
             position: relative;
             cursor: pointer;
         }
-        .toggle-ball {
+        .toggle-ball{
             width: 22px;
             height: 22px;
             border-radius: 50%;
@@ -124,25 +124,41 @@ $tasks = $stmt->get_result();
             left: 1.5px;
             transition: transform 0.3s;
         }
-        .dark .toggle-ball {
+        .dark .toggle-ball{
             transform: translateX(25px);
+        }
+        .badge-baixa{
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .badge-media{
+            background-color: #bf9701;
+            color: #ffffff;
+        }
+        .badge-alta{
+            background-color: #ff2a00;
+            color: #ffffff;
+        }
+        .badge-urgente{
+            background-color: #ff0000;
+            color: #ffffff;
         }
     </style>
     <script>
-        function toggleSidebar() {
+        function toggleSidebar(){
             const sidebar = document.querySelector('.sidebar');
             const content = document.querySelector('.content');
             const isClosed = sidebar.classList.toggle('sidebar-closed');
             content.classList.toggle('content-margin-left', isClosed);
         }
-        function toggleTheme() {
+        function toggleTheme(){
             const htmlElement = document.documentElement;
             const theme = htmlElement.classList.toggle('dark') ? 'dark' : 'light';
             localStorage.setItem('theme', theme);
         }
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () =>{
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
+            if (savedTheme === 'dark'){
                 document.documentElement.classList.add('dark');
             }
         });
@@ -183,7 +199,13 @@ $tasks = $stmt->get_result();
                 <li class="task-item mb-4">
                     <h3 class="text-lg font-bold"><?php echo htmlspecialchars($task['title']); ?></h3>
                     <p><?php echo htmlspecialchars($task['description']); ?></p>
-                    
+                    <p><strong>Criada em:</strong> <?php echo date('d/m/Y', strtotime($task['created_at'])); ?></p>
+                    <p><strong>Data de Término:</strong> <?php echo $task['due_date'] ? date('d/m/Y', strtotime($task['due_date'])) : 'Não definida'; ?></p>
+                    <span class="inline-block rounded px-2 py-1 text-xs font-bold <?php 
+                    echo $task['priority'] == 'Baixa' ? 'badge-baixa' : 
+                        ($task['priority'] == 'Média' ? 'badge-media' :
+                        ($task['priority'] == 'Alta' ? 'badge-alta' : 'badge-urgente'));
+                    ?>"><?php echo $task['priority']; ?></span>
                     <!-- Subtarefas -->
                     <h4 class="text-md font-bold mt-2">Subtarefas:</h4>
                     <ul>
