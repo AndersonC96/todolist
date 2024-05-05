@@ -6,10 +6,18 @@
         exit();
     }
     $username = $_SESSION['username'];
-    if(!empty($_POST['new_password'])){
-        $new_password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
+    $new_password = $_POST['new_password'];
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    if(!empty($first_name) || !empty($last_name)){
+        $stmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ? WHERE username = ? AND (first_name = '' OR last_name = '')");
+        $stmt->bind_param("sss", $first_name, $last_name, $username);
+        $stmt->execute();
+    }
+    if(!empty($new_password)){
+        $hashedPassword = password_hash($new_password, PASSWORD_BCRYPT);
         $stmt = $conn->prepare("UPDATE users SET password = ? WHERE username = ?");
-        $stmt->bind_param("ss", $new_password, $username);
+        $stmt->bind_param("ss", $hashedPassword, $username);
         $stmt->execute();
     }
     if(isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK){
