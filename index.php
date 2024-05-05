@@ -65,7 +65,7 @@
             }
 
             .theme-button{
-                background-color: #f59e0b; /* amarelo */
+                background-color: #f59e0b;
             }
 
             .task-item{
@@ -163,7 +163,7 @@
                 <img src="<?php echo $profilePicture; ?>" alt="Profile Picture" class="w-12 h-12 rounded-full">
                 <span class="ml-4"><?php echo $username; ?></span>
             </div>
-            <button onclick="window.location.href='my_account.php'" class="custom-button bg-indigo-500 mb-4">Minha Conta</button>
+            <button onclick="window.location.href='account.php'" class="custom-button bg-indigo-500 mb-4">Minha Conta</button>
             <button onclick="toggleSidebar()" class="absolute top-4 right-4 text-gray-100 text-2xl">&times;</button>
             <button onclick="window.location.href='add_task.php'" class="custom-button bg-green-500">Adicionar Tarefa</button>
             <input type="text" placeholder="Buscar..." class="w-full p-2 mb-4 bg-gray-700 rounded">
